@@ -1,5 +1,6 @@
 'use strict'
 
+import { CanvasHandle } from './node_modules/natlib/canvas/CanvasHandle.js'
 import { startMainloop } from './node_modules/natlib/scheduling/mainloop.js'
 
 import { createParticles } from './debug/debug.js'
@@ -142,5 +143,18 @@ AFRAME.registerComponent('canvas-screen', {
     tick() {
         // const texture = this.el.getObject3D('mesh').material.map
         // if (texture) texture.needsUpdate = true
+    },
+})
+
+AFRAME.registerComponent('grid-floor', {
+    init() {
+        const con = new CanvasHandle(document.querySelector('#canvas'), 256, 256, 1, (con, width, height) => {
+            con.fillStyle = '#f4f4f4'
+            con.fillRect(0, 0, width, height)
+
+            con.fillStyle = '#1a1c2c'
+            con.fillRect(0, 0, 4, height)
+            con.fillRect(0, 0, height, 4)
+        }).con
     },
 })
