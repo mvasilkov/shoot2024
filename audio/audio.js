@@ -6,11 +6,14 @@ function noteFreq(n) {
 }
 export let ac;
 export let out;
+export let out2;
 let songStart;
 export function audioInit() {
     ac = new AudioContext;
     out = ac.createGain();
     out.gain.value = 0.3333;
+    out2 = ac.createGain();
+    out2.gain.value = 0.4;
     // out.connect(ac.destination)
     // return Promise.resolve()
     return reverb();
@@ -42,6 +45,8 @@ function reverb() {
     wet.gain.value = 1 / 3;
     out.connect(conv);
     out.connect(dry);
+    out2.connect(conv);
+    out2.connect(dry);
     conv.connect(wet);
     dry.connect(ac.destination);
     wet.connect(ac.destination);

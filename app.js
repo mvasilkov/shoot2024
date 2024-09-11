@@ -3,9 +3,10 @@
 import { CanvasHandle } from './node_modules/natlib/canvas/CanvasHandle.js'
 import { startMainloop } from './node_modules/natlib/scheduling/mainloop.js'
 
+import { ac, audioInit, out, out2, playLoop } from './audio/audio.js'
+import { zzfxMicro, zzfxR } from './audio/ZzFX.js'
 import { createParticles } from './debug/debug.js'
 import { scene } from './prelude.js'
-import { audioInit, playLoop, out } from './audio/audio.js'
 
 let started = false
 let bulletsShot = 0
@@ -71,6 +72,8 @@ AFRAME.registerComponent('dakka', {
 
                 this.aliveText.setAttribute('visible', true)
             }
+
+            sound(sndGun)
         }
 
         this.el.addEventListener('click', blast)
@@ -114,6 +117,8 @@ AFRAME.registerComponent('dakka', {
                     this.accuracyText.setAttribute('text', { value: `ACCURACY: ${accuracy}%` })
 
                     this.thanksText.setAttribute('visible', true)
+
+                    if (killed) sound(sndWin)
                 }
                 else ++bulletsShot
                 break
@@ -139,11 +144,15 @@ AFRAME.registerComponent('dakka', {
                 })
 
                 createParticles()
+
+                sound(sndButton)
                 break
 
             case 'music':
                 musicOn = !musicOn
                 out.gain.value = musicOn ? 0.3333 : 0
+
+                sound(sndButton)
         }
 
         // con.fillStyle = '#f00'
@@ -195,6 +204,8 @@ AFRAME.registerComponent('dakka', {
                 }
             })
         }
+
+        sound(sndHit)
     },
 })
 
@@ -309,6 +320,42 @@ AFRAME.registerComponent('grid-floor', {
 })
 
 // Audio
+
+function sound(snd) {
+    try {
+        if (snd.buf === null) {
+            snd.buf = ac.createBuffer(1, snd.raw.length, zzfxR)
+            snd.buf.getChannelData(0).set(snd.raw)
+        }
+        const bufs = ac.createBufferSource()
+        bufs.buffer = snd.buf
+        bufs.connect(out2)
+        bufs.start()
+    }
+    catch (err) {
+    }
+}
+
+const sndWin = {
+    raw: zzfxMicro.apply(null, [, , 345, .01, .17, .87, 1, 1.05, .2, , 67, .03, .02, , -0.2, , , .79, , .04]),
+    buf: null,
+}
+
+const sndButton = {
+    raw: zzfxMicro.apply(null, [, , 417, , .01, .01, , .94, -0.1, 2.5, -9, , , , , , , , .07, .01]),
+    buf: null,
+}
+
+const sndGun = {
+    // raw: zzfxMicro.apply(null, [.8, , 39, .01, .02, .27, 4, 1.7, , 1, , , , .7, , .3, , .79, , , 1477]),
+    raw: zzfxMicro.apply(null, [.8, 0, 40, .01, .02, .28, 4, 1.6, , 1, -50, , -0.01, .7, , .3, , .69, , , 1478]),
+    buf: null,
+}
+
+const sndHit = {
+    raw: zzfxMicro.apply(null, [, , 134, .08, .19, .34, , 1.8, , -87, 126, .06, .06, , , .1, , .84, .1]),
+    buf: null,
+}
 
 let audioInitialized = false
 
