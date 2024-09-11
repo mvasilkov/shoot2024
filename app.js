@@ -6,6 +6,8 @@ import { startMainloop } from './node_modules/natlib/scheduling/mainloop.js'
 import { createParticles } from './debug/debug.js'
 import { con, scene } from './prelude.js'
 
+let started = false
+
 AFRAME.registerComponent('dakka', {
     init() {
         const blast = event => {
@@ -44,6 +46,8 @@ AFRAME.registerComponent('dakka', {
 
                 this.bulletHit(uv)
             })
+
+            started = true
         }
 
         this.el.addEventListener('click', blast)
@@ -108,15 +112,15 @@ const unproject = (x0, y0) => {
 
 AFRAME.registerComponent('canvas-screen', {
     init() {
-        this.running = false
-
         const targets = document.querySelectorAll('.target')
         targets.forEach(target => {
             target.setAttribute('visible', true)
         })
 
+        const eyes = document.querySelectorAll('.target > a-entity')
+
         const update = () => {
-            if (this.running) scene.update()
+            if (started) scene.update()
         }
 
         const render = t => {
@@ -130,6 +134,11 @@ AFRAME.registerComponent('canvas-screen', {
                 targets[index].object3D.position.set(x, y, z)
                 // Look at the player
                 targets[index].object3D.quaternion.setFromAxisAngle(new THREE.Vector3(0, 1, 0), -theta - 0.5 * Math.PI)
+
+                eyes[index].object3D.position.set(
+                    0.01 * (p.position.x - p.oldPosition.x),
+                    0.01 * (p.position.y - p.oldPosition.y),
+                    0.3666)
             });
             // con.fillStyle = '#fff';
             // con.fill();

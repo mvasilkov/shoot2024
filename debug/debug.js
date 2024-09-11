@@ -6,11 +6,30 @@ import { ParticleBody } from '../verlet/ParticleBody.js';
 import { scene } from '../prelude.js';
 export let collection;
 export const createParticles = () => {
-    const prng = new Mulberry32(999);
+    const prng = new Mulberry32(9);
     collection = new ParticleBody(scene);
-    for (let n = 0; n < 13; ++n) {
-        const x = randomUint32LessThan(prng, 960 /* Settings.screenWidth */);
-        const y = randomUint32LessThan(prng, 540 /* Settings.screenHeight */);
-        new Particle(collection, x, y, 22, 1, 1);
-    }
+    // for (let n = 0; n < 13; ++n) {
+    //     const x = randomUint32LessThan(prng, 960 /* Settings.screenWidth */);
+    //     const y = randomUint32LessThan(prng, 540 /* Settings.screenHeight */);
+    //     new Particle(collection, x, y, 22, 1, 1);
+    // }
+
+    const x0 = 0.5 * 960
+    const y0 = 0.5 * 540 + 50
+    const jitter = () => randomUint32LessThan(prng, 5) - 2
+
+    new Particle(collection, x0 + jitter() - 44, y0 + jitter() - 88, 22, 1, 1)
+    new Particle(collection, x0 + jitter() - 44, y0 + jitter() - 44, 22, 1, 1)
+    new Particle(collection, x0 + jitter() - 44, y0 + jitter(), 22, 1, 1)
+    new Particle(collection, x0 + jitter() - 44, y0 + jitter() + 44, 22, 1, 1)
+    new Particle(collection, x0 + jitter() - 44, y0 + jitter() + 88, 22, 1, 1)
+    new Particle(collection, x0 + jitter() - 77, y0 + jitter() - 66, 22, 1, 1)
+
+    new Particle(collection, x0 + jitter() + 44, y0 + jitter() - 88, 22, 1, 1)
+    new Particle(collection, x0 + jitter() + 77, y0 + jitter() - 66, 22, 1, 1)
+    new Particle(collection, x0 + jitter() + 77, y0 + jitter() - 22, 22, 1, 1)
+    new Particle(collection, x0 + jitter() + 44, y0 + jitter(), 22, 1, 1)
+    new Particle(collection, x0 + jitter() + 77, y0 + jitter() + 22, 22, 1, 1)
+    new Particle(collection, x0 + jitter() + 77, y0 + jitter() + 66, 22, 1, 1)
+    new Particle(collection, x0 + jitter() + 44, y0 + jitter() + 88, 22, 1, 1)
 };
