@@ -1,6 +1,7 @@
 'use strict';
-import { Mulberry32 } from '../node_modules/natlib/prng/Mulberry32.js';
-import { randomUint32LessThan } from '../node_modules/natlib/prng/prng.js';
+import { Mulberry32 } from '../../node_modules/natlib/prng/Mulberry32.js';
+import { randomUint32LessThan } from '../../node_modules/natlib/prng/prng.js';
+
 import { Particle } from '../verlet/Particle.js';
 import { ParticleBody } from '../verlet/ParticleBody.js';
 import { scene } from '../prelude.js';

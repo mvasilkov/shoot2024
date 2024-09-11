@@ -1,7 +1,7 @@
 'use strict'
 
-import { CanvasHandle } from './node_modules/natlib/canvas/CanvasHandle.js'
-import { startMainloop } from './node_modules/natlib/scheduling/mainloop.js'
+import { CanvasHandle } from '../node_modules/natlib/canvas/CanvasHandle.js'
+import { startMainloop } from '../node_modules/natlib/scheduling/mainloop.js'
 
 import { ac, audioInit, out, out2, playLoop } from './audio/audio.js'
 import { zzfxMicro, zzfxR } from './audio/ZzFX.js'
