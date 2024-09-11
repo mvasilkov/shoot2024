@@ -21,19 +21,20 @@ export const createParticles = () => {
     const x0 = 0.5 * 960 - 2
     const y0 = 0.5 * 540 + 50
     const jitter = () => randomUint32LessThan(prng, 5) - 2
+    let n = 0
 
-    new Particle(collection, x0 + jitter() - 44, y0 + jitter() - 88, 22, 1, 1)
-    new Particle(collection, x0 + jitter() - 44, y0 + jitter() - 44, 22, 1, 1)
-    new Particle(collection, x0 + jitter() - 44, y0 + jitter(), 22, 1, 1)
-    new Particle(collection, x0 + jitter() - 44, y0 + jitter() + 44, 22, 1, 1)
-    new Particle(collection, x0 + jitter() - 44, y0 + jitter() + 88, 22, 1, 1)
-    new Particle(collection, x0 + jitter() - 80, y0 + jitter() - 70, 22, 1, 1)
+    new Particle(collection, x0 + jitter() - 44, y0 + 0.94 * (jitter() - 88), 22, 1, 1).index = n++
+    new Particle(collection, x0 + jitter() - 44, y0 + 0.94 * (jitter() - 44), 22, 1, 1).index = n++
+    new Particle(collection, x0 + jitter() - 44, y0 + 0.94 * jitter(), 22, 1, 1).index = n++
+    new Particle(collection, x0 + jitter() - 44, y0 + 0.94 * (jitter() + 44), 22, 1, 1).index = n++
+    new Particle(collection, x0 + jitter() - 44, y0 + 0.94 * (jitter() + 88), 22, 1, 1).index = n++
+    new Particle(collection, x0 + jitter() - 80, y0 + 0.94 * (jitter() - 70), 22, 1, 1).index = n++
 
-    new Particle(collection, x0 + jitter() + 44, y0 + jitter() - 88, 22, 1, 1)
-    new Particle(collection, x0 + jitter() + 77, y0 + jitter() - 66, 22, 1, 1)
-    new Particle(collection, x0 + jitter() + 77, y0 + jitter() - 22, 22, 1, 1)
-    new Particle(collection, x0 + jitter() + 44, y0 + jitter(), 22, 1, 1)
-    new Particle(collection, x0 + jitter() + 77, y0 + jitter() + 22, 22, 1, 1)
-    new Particle(collection, x0 + jitter() + 77, y0 + jitter() + 66, 22, 1, 1)
-    new Particle(collection, x0 + jitter() + 44, y0 + jitter() + 88, 22, 1, 1)
+    new Particle(collection, x0 + jitter() + 44, y0 + 0.94 * (jitter() - 88), 22, 1, 1).index = n++
+    new Particle(collection, x0 + jitter() + 77, y0 + 0.94 * (jitter() - 66), 22, 1, 1).index = n++
+    new Particle(collection, x0 + jitter() + 77, y0 + 0.94 * (jitter() - 22), 22, 1, 1).index = n++
+    new Particle(collection, x0 + jitter() + 44, y0 + 0.94 * jitter(), 22, 1, 1).index = n++
+    new Particle(collection, x0 + jitter() + 77, y0 + 0.94 * (jitter() + 22), 22, 1, 1).index = n++
+    new Particle(collection, x0 + jitter() + 77, y0 + 0.94 * (jitter() + 66), 22, 1, 1).index = n++
+    new Particle(collection, x0 + jitter() + 44, y0 + 0.94 * (jitter() + 88), 22, 1, 1).index = n++
 }

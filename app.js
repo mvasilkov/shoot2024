@@ -3,13 +3,15 @@
 import { CanvasHandle } from './node_modules/natlib/canvas/CanvasHandle.js'
 import { startMainloop } from './node_modules/natlib/scheduling/mainloop.js'
 
-import { createParticles } from './debug/debug.js'
-import { con, scene } from './prelude.js'
+import { collection, createParticles } from './debug/debug.js'
+import { scene } from './prelude.js'
 
 let started = false
 
 AFRAME.registerComponent('dakka', {
     init() {
+        this.targets = document.querySelectorAll('.target')
+
         const titles = document.querySelectorAll('.title')
         this.title1 = titles[0]
         this.title2 = titles[1]
@@ -33,7 +35,7 @@ AFRAME.registerComponent('dakka', {
                 radius: 0.05,
             })
             bullet.setAttribute('material', {
-                color: '#f00',
+                color: '#ff0044',
             })
             bullet.setAttribute('position', startPos)
             bullet.setAttribute('animation', {
@@ -69,6 +71,19 @@ AFRAME.registerComponent('dakka', {
                 const x = 960 * (1 - uv.x)
                 const y = 540 * (1 - uv.y)
 
+                scene.vertices.some(v => {
+                    const dx = v.position.x - x
+                    const dy = v.position.y - y
+                    const distanceSquared = (dx * dx + dy * dy)
+
+                    if (distanceSquared < 484) {
+                        // Kill
+                        v.dead = true
+                        this.targets[v.index].setAttribute('visible', false)
+
+                        return true
+                    }
+                })
                 break
 
             case 'reset':
@@ -76,6 +91,10 @@ AFRAME.registerComponent('dakka', {
 
                 this.title1.setAttribute('visible', true)
                 this.title2.setAttribute('visible', true)
+
+                this.targets.forEach(target => {
+                    target.setAttribute('visible', true)
+                })
 
                 createParticles()
         }
@@ -149,15 +168,15 @@ AFRAME.registerComponent('canvas-screen', {
             scene.vertices.forEach(v => v.interpolate(t));
 
             // con.beginPath();
-            scene.vertices.forEach((p, index) => {
+            scene.vertices.forEach(p => {
                 // con.moveTo(p.interpolated.x + p.radius, p.interpolated.y);
                 // con.arc(p.interpolated.x, p.interpolated.y, p.radius, 0, 2 * Math.PI);
                 const [x, y, z, theta] = unproject(p.interpolated.x, p.interpolated.y)
-                targets[index].object3D.position.set(x, y, z)
+                targets[p.index].object3D.position.set(x, y, z)
                 // Look at the player
-                targets[index].object3D.quaternion.setFromAxisAngle(new THREE.Vector3(0, 1, 0), -theta - 0.5 * Math.PI)
+                targets[p.index].object3D.quaternion.setFromAxisAngle(new THREE.Vector3(0, 1, 0), -theta - 0.5 * Math.PI)
 
-                eyes[index].object3D.position.set(
+                eyes[p.index].object3D.position.set(
                     0.01 * (p.position.x - p.oldPosition.x),
                     0.01 * (p.position.y - p.oldPosition.y),
                     0.3666)

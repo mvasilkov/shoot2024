@@ -27,8 +27,10 @@ export class ParticleScene {
             this.constraints.forEach(c => c.solve());
             for (let i = this.vertices.length; --i > 0;) {
                 const v0 = this.vertices[i];
+                if (v0.dead) continue;
                 for (let j = i; --j >= 0;) {
                     const v1 = this.vertices[j];
+                    if (v1.dead) continue;
                     if (findCollision(v0, v1)) {
                         resolveCollision(v0, v1);
                     }
