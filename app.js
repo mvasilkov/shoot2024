@@ -10,7 +10,9 @@ let started = false
 
 AFRAME.registerComponent('dakka', {
     init() {
-        const [title1, title2] = document.querySelectorAll('.title')
+        const titles = document.querySelectorAll('.title')
+        this.title1 = titles[0]
+        this.title2 = titles[1]
 
         const blast = event => {
             const visible = this.el.getAttribute('visible')
@@ -22,7 +24,7 @@ AFRAME.registerComponent('dakka', {
             this.el.object3D.localToWorld(startPos)
 
             // Bullet end position and distance
-            const { point: endPos, distance, uv } = event.detail.intersection
+            const { object, point: endPos, distance, uv } = event.detail.intersection
 
             // Bullet entity
             const bullet = document.createElement('a-entity')
@@ -46,14 +48,14 @@ AFRAME.registerComponent('dakka', {
             bullet.addEventListener('animationcomplete', () => {
                 bullet.parentNode.removeChild(bullet)
 
-                this.bulletHit(uv)
+                this.bulletHit(object, uv)
             })
 
-            if (!started) {
+            if (!started && object.el.id === 'screen') {
                 started = true
 
-                title1.setAttribute('visible', false)
-                title2.setAttribute('visible', false)
+                this.title1.setAttribute('visible', false)
+                this.title2.setAttribute('visible', false)
             }
         }
 
@@ -61,12 +63,25 @@ AFRAME.registerComponent('dakka', {
         this.el.addEventListener('triggerdown', blast)
     },
 
-    bulletHit(uv) {
-        const x = 960 * (1 - uv.x)
-        const y = 540 * (1 - uv.y)
+    bulletHit(object, uv) {
+        switch (object.el.id) {
+            case 'screen':
+                const x = 960 * (1 - uv.x)
+                const y = 540 * (1 - uv.y)
 
-        con.fillStyle = '#f00'
-        con.fillRect(x - 4, y - 4, 8, 8)
+                break
+
+            case 'reset':
+                started = false
+
+                this.title1.setAttribute('visible', true)
+                this.title2.setAttribute('visible', true)
+
+                createParticles()
+        }
+
+        // con.fillStyle = '#f00'
+        // con.fillRect(x - 4, y - 4, 8, 8)
     },
 })
 
