@@ -103,18 +103,20 @@ const unproject = (x0, y0) => {
     const y = 0.01666 * (540 - y0)
     const z = 7.6394 * Math.sin(theta)
 
-    return [x, y, z]
+    return [x, y, z, theta]
 }
 
 AFRAME.registerComponent('canvas-screen', {
     init() {
+        this.running = false
+
         const targets = document.querySelectorAll('.target')
         targets.forEach(target => {
             target.setAttribute('visible', true)
         })
 
         const update = () => {
-            scene.update()
+            if (this.running) scene.update()
         }
 
         const render = t => {
@@ -124,7 +126,10 @@ AFRAME.registerComponent('canvas-screen', {
             scene.vertices.forEach((p, index) => {
                 // con.moveTo(p.interpolated.x + p.radius, p.interpolated.y);
                 // con.arc(p.interpolated.x, p.interpolated.y, p.radius, 0, 2 * Math.PI);
-                targets[index].object3D.position.set(...unproject(p.interpolated.x, p.interpolated.y))
+                const [x, y, z, theta] = unproject(p.interpolated.x, p.interpolated.y)
+                targets[index].object3D.position.set(x, y, z)
+                // Look at the player
+                targets[index].object3D.quaternion.setFromAxisAngle(new THREE.Vector3(0, 1, 0), -theta - 0.5 * Math.PI)
             });
             // con.fillStyle = '#fff';
             // con.fill();
