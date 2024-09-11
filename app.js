@@ -94,7 +94,8 @@ AFRAME.registerComponent('dakka', {
                     if (distanceSquared < 484) {
                         // Kill
                         killed = v.dead = true
-                        this.targets[v.index].setAttribute('visible', false)
+
+                        this.headshot(this.targets[v.index])
                     }
                     else ++aliveCount
                 })
@@ -140,6 +141,53 @@ AFRAME.registerComponent('dakka', {
 
         // con.fillStyle = '#f00'
         // con.fillRect(x - 4, y - 4, 8, 8)
+    },
+
+    headshot(target) {
+        target.setAttribute('visible', false)
+
+        const dir = new THREE.Vector3(0, 1.69, 0)
+        dir.sub(target.object3D.position).normalize().multiplyScalar(2.5)
+
+        // Explosion
+        for (let n = 0; n < 13; ++n) {
+            const particle = document.createElement('a-entity')
+            particle.setAttribute('geometry', {
+                primitive: 'sphere',
+                radius: 0.1,
+            })
+            particle.setAttribute('material', {
+                color: target.components.material.data.color,
+                emissive: target.components.material.data.emissive,
+                emissiveIntensity: target.components.material.data.emissiveIntensity,
+                opacity: 1,
+                transparent: true,
+            })
+            particle.setAttribute('position', target.object3D.position.clone())
+            particle.setAttribute('animation__pos', {
+                property: 'position',
+                to: {
+                    x: dir.x + target.object3D.position.x + 2 * (Math.random() - 0.5),
+                    y: dir.y + target.object3D.position.y + 2 * (Math.random() - 0.5),
+                    z: dir.z + target.object3D.position.z + 2 * (Math.random() - 0.5),
+                },
+                dur: 600,
+                easing: 'easeOutQuad',
+            })
+            particle.setAttribute('animation__trans', {
+                property: 'material.opacity',
+                to: 0,
+                dur: 600,
+                easing: 'easeInQuad',
+            })
+            this.el.sceneEl.appendChild(particle)
+
+            particle.addEventListener('animationcomplete', event => {
+                if (event.detail.name === 'animation__trans') {
+                    particle.parentNode.removeChild(particle)
+                }
+            })
+        }
     },
 })
 
