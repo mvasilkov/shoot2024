@@ -1,7 +1,6 @@
 'use strict'
 
 import { CanvasHandle } from '../node_modules/natlib/canvas/CanvasHandle.js'
-import { startMainloop } from '../node_modules/natlib/scheduling/mainloop.js'
 
 import { ac, audioInit, out, out2, playLoop } from './audio/audio.js'
 import { zzfxMicro, zzfxR } from './audio/ZzFX.js'
@@ -137,11 +136,11 @@ AFRAME.registerComponent('dakka', {
                 this.title1.setAttribute('visible', true)
                 this.title2.setAttribute('visible', true)
 
-                requestAnimationFrame(() => {
+                setTimeout(() => {
                     this.targets.forEach(target => {
                         target.setAttribute('visible', true)
                     })
-                })
+                }, 0)
 
                 createParticles()
 
@@ -256,6 +255,25 @@ const unproject = (x0, y0) => {
     return [x, y, z, theta]
 }
 
+/** Main loop using a fixed step of `T` milliseconds.
+ * `render()` receives `t` in the range (0, 1] for interpolation. */
+export const startMainloop = (update, render, T = 20) => {
+    let before = 0;
+    let t = 0;
+    const loop = current => {
+        t += current - before;
+        before = current;
+        // Most updates per render
+        let n = 4;
+        while (t > 0) {
+            t -= T;
+            if (--n >= 0) update(T);
+        }
+        render(t / T + 1);
+    };
+    return loop
+};
+
 AFRAME.registerComponent('canvas-screen', {
     init() {
         const targets = document.querySelectorAll('.target')
@@ -291,7 +309,7 @@ AFRAME.registerComponent('canvas-screen', {
         }
 
         createParticles()
-        startMainloop(update, render)
+        this.loop = startMainloop(update, render)
 
         // con.fillStyle = '#000'
         // con.fillRect(0, 0, 960, 540)
@@ -300,7 +318,8 @@ AFRAME.registerComponent('canvas-screen', {
         if (screenModel) screenModel.visible = false
     },
 
-    tick() {
+    tick(current) {
+        this.loop(current)
         // const texture = this.el.getObject3D('mesh').material.map
         // if (texture) texture.needsUpdate = true
     },
