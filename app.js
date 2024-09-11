@@ -5,10 +5,12 @@ import { startMainloop } from './node_modules/natlib/scheduling/mainloop.js'
 
 import { createParticles } from './debug/debug.js'
 import { scene } from './prelude.js'
+import { audioInit, playLoop, out } from './audio/audio.js'
 
 let started = false
 let bulletsShot = 0
 let bulletsHit = 0
+let musicOn = true
 
 AFRAME.registerComponent('dakka', {
     init() {
@@ -137,6 +139,11 @@ AFRAME.registerComponent('dakka', {
                 })
 
                 createParticles()
+                break
+
+            case 'music':
+                musicOn = !musicOn
+                out.gain.value = musicOn ? 0.3333 : 0
         }
 
         // con.fillStyle = '#f00'
@@ -300,3 +307,28 @@ AFRAME.registerComponent('grid-floor', {
         }).con
     },
 })
+
+// Audio
+
+let audioInitialized = false
+
+function initializeAudio() {
+    try {
+        audioInit().then(playLoop)
+        audioInitialized = true
+    }
+    catch (err) {
+    }
+}
+
+// https://html.spec.whatwg.org/multipage/interaction.html#activation-triggering-input-event
+
+document.addEventListener('mousedown', () => {
+    if (audioInitialized) return
+    initializeAudio()
+}, { once: true })
+
+document.addEventListener('touchend', () => {
+    if (audioInitialized) return
+    initializeAudio()
+}, { once: true })
