@@ -10,6 +10,8 @@ let started = false
 
 AFRAME.registerComponent('dakka', {
     init() {
+        const [title1, title2] = document.querySelectorAll('.title')
+
         const blast = event => {
             const visible = this.el.getAttribute('visible')
             if (!visible) return
@@ -47,7 +49,12 @@ AFRAME.registerComponent('dakka', {
                 this.bulletHit(uv)
             })
 
-            started = true
+            if (!started) {
+                started = true
+
+                title1.setAttribute('visible', false)
+                title2.setAttribute('visible', false)
+            }
         }
 
         this.el.addEventListener('click', blast)

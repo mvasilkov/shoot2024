@@ -6,6 +6,10 @@ import { ParticleBody } from '../verlet/ParticleBody.js';
 import { scene } from '../prelude.js';
 export let collection;
 export const createParticles = () => {
+    scene.vertices = []
+    scene.constraints = []
+    scene.bodies = []
+
     const prng = new Mulberry32(9);
     collection = new ParticleBody(scene);
     // for (let n = 0; n < 13; ++n) {
@@ -14,7 +18,7 @@ export const createParticles = () => {
     //     new Particle(collection, x, y, 22, 1, 1);
     // }
 
-    const x0 = 0.5 * 960
+    const x0 = 0.5 * 960 - 2
     const y0 = 0.5 * 540 + 50
     const jitter = () => randomUint32LessThan(prng, 5) - 2
 
@@ -23,7 +27,7 @@ export const createParticles = () => {
     new Particle(collection, x0 + jitter() - 44, y0 + jitter(), 22, 1, 1)
     new Particle(collection, x0 + jitter() - 44, y0 + jitter() + 44, 22, 1, 1)
     new Particle(collection, x0 + jitter() - 44, y0 + jitter() + 88, 22, 1, 1)
-    new Particle(collection, x0 + jitter() - 77, y0 + jitter() - 66, 22, 1, 1)
+    new Particle(collection, x0 + jitter() - 80, y0 + jitter() - 70, 22, 1, 1)
 
     new Particle(collection, x0 + jitter() + 44, y0 + jitter() - 88, 22, 1, 1)
     new Particle(collection, x0 + jitter() + 77, y0 + jitter() - 66, 22, 1, 1)
@@ -32,4 +36,4 @@ export const createParticles = () => {
     new Particle(collection, x0 + jitter() + 77, y0 + jitter() + 22, 22, 1, 1)
     new Particle(collection, x0 + jitter() + 77, y0 + jitter() + 66, 22, 1, 1)
     new Particle(collection, x0 + jitter() + 44, y0 + jitter() + 88, 22, 1, 1)
-};
+}
