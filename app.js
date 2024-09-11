@@ -3,10 +3,12 @@
 import { CanvasHandle } from './node_modules/natlib/canvas/CanvasHandle.js'
 import { startMainloop } from './node_modules/natlib/scheduling/mainloop.js'
 
-import { collection, createParticles } from './debug/debug.js'
+import { createParticles } from './debug/debug.js'
 import { scene } from './prelude.js'
 
 let started = false
+let bulletsShot = 0
+let bulletsHit = 0
 
 AFRAME.registerComponent('dakka', {
     init() {
@@ -15,6 +17,10 @@ AFRAME.registerComponent('dakka', {
         const titles = document.querySelectorAll('.title')
         this.title1 = titles[0]
         this.title2 = titles[1]
+
+        this.aliveText = document.querySelector('.alive')
+        this.accuracyText = document.querySelector('.accuracy')
+        this.thanksText = document.querySelector('.thanks')
 
         const blast = event => {
             const visible = this.el.getAttribute('visible')
@@ -55,9 +61,13 @@ AFRAME.registerComponent('dakka', {
 
             if (!started && object.el.id === 'screen') {
                 started = true
+                bulletsShot = 0
+                bulletsHit = 0
 
                 this.title1.setAttribute('visible', false)
                 this.title2.setAttribute('visible', false)
+
+                this.aliveText.setAttribute('visible', true)
             }
         }
 
@@ -71,29 +81,58 @@ AFRAME.registerComponent('dakka', {
                 const x = 960 * (1 - uv.x)
                 const y = 540 * (1 - uv.y)
 
-                scene.vertices.some(v => {
+                let killed = false
+                let aliveCount = 0
+
+                scene.vertices.forEach(v => {
+                    if (v.dead) return
+
                     const dx = v.position.x - x
                     const dy = v.position.y - y
                     const distanceSquared = (dx * dx + dy * dy)
 
                     if (distanceSquared < 484) {
                         // Kill
-                        v.dead = true
+                        killed = v.dead = true
                         this.targets[v.index].setAttribute('visible', false)
-
-                        return true
                     }
+                    else ++aliveCount
                 })
+
+                if (killed) {
+                    ++bulletsHit
+                    this.aliveText.setAttribute('text', { value: 'NOMSTERS ALIVE: ' + aliveCount })
+                }
+
+                if (aliveCount === 0) {
+                    const accuracy = Math.round(100 * bulletsHit / bulletsShot)
+
+                    this.accuracyText.setAttribute('visible', true)
+                    this.accuracyText.setAttribute('text', { value: `ACCURACY: ${accuracy}%` })
+
+                    this.thanksText.setAttribute('visible', true)
+                }
+                else ++bulletsShot
                 break
 
             case 'reset':
                 started = false
 
+                this.aliveText.setAttribute('visible', false)
+                this.aliveText.setAttribute('text', { value: 'NOMSTERS ALIVE: 13' })
+
+                this.accuracyText.setAttribute('visible', false)
+                this.accuracyText.setAttribute('text', { value: 'ACCURACY: 100%' })
+
+                this.thanksText.setAttribute('visible', false)
+
                 this.title1.setAttribute('visible', true)
                 this.title2.setAttribute('visible', true)
 
-                this.targets.forEach(target => {
-                    target.setAttribute('visible', true)
+                requestAnimationFrame(() => {
+                    this.targets.forEach(target => {
+                        target.setAttribute('visible', true)
+                    })
                 })
 
                 createParticles()
